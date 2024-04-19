@@ -1,13 +1,13 @@
 package core;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         HttpClient client = new HttpClient();
-        HttpRequest request = new HttpRequest("www.example.com");
+        HttpRequest exampleRequest = new HttpRequest("www.example.com", HttpVersion.HTTP_11);
+        HttpRequest googleRequest = new HttpRequest("www.google.com", HttpVersion.HTTP_11);
 
-        client.send(request);
+        client.send(exampleRequest);
     }
 }
