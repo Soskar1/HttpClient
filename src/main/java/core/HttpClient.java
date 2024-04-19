@@ -8,6 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HttpClient {
+    private final Pattern httpVersionPattern;
+
+    public HttpClient() {
+        httpVersionPattern = Pattern.compile("HTTP/(0\\.9|1\\.0|1\\.1|2|3)");
+    }
+
     //TODO: Make this async
     public void send(HttpRequest request) throws IOException {
         InetAddress address = request.getAddress();
@@ -42,8 +48,13 @@ public class HttpClient {
         while (!endOfHeaders) {
             bytesRead = in.read(buffer);
             String output = new String(buffer, 0, bytesRead);
-
             Scanner scanner = new Scanner(output);
+
+            String versionStatus = scanner.nextLine();
+            Matcher matcher = httpVersionPattern.matcher(versionStatus);
+            int end = matcher.end();
+
+
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 headers.append(line).append("\n");
