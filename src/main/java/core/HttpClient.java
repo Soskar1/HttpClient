@@ -11,7 +11,7 @@ public class HttpClient {
     private final Pattern httpVersionPattern;
 
     public HttpClient() {
-        httpVersionPattern = Pattern.compile("HTTP/(0\\.9|1\\.0|1\\.1|2|3)");
+        httpVersionPattern = Pattern.compile("^HTTP/(0\\.9|1\\.0|1\\.1|2|3)");
     }
 
     //TODO: Make this async
@@ -52,8 +52,9 @@ public class HttpClient {
 
             String versionStatus = scanner.nextLine();
             Matcher matcher = httpVersionPattern.matcher(versionStatus);
-            int end = matcher.end();
-
+            matcher.find();
+            HttpVersion httpVersion = HttpVersion.valueOf(matcher.group());
+            System.out.println(httpVersion);
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
