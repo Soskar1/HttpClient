@@ -11,9 +11,11 @@ import java.util.regex.Pattern;
 
 public class HttpClient {
     private final Pattern httpVersionPattern;
+    private final Pattern statusCodePattern;
 
     public HttpClient() {
         httpVersionPattern = Pattern.compile("^HTTP/(0\\.9|1\\.0|1\\.1|2|3)");
+        statusCodePattern = Pattern.compile("[A-z]\\D*$");
     }
 
     //TODO: Make this async
@@ -40,10 +42,11 @@ public class HttpClient {
         byte[] buffer = new byte[1024];
         int bytesRead;
         bytesRead = in.read(buffer);
+        
         String response = new String(buffer, 0, bytesRead);
         Scanner scanner = new Scanner(response);
-
         String responseLine = scanner.nextLine();
+
         HttpVersion httpVersion = extractHttpVersion(responseLine);
         StatusCode statusCode = extractStatusCode(responseLine);
         List<HttpHeader> httpHeaders = new ArrayList<>();
@@ -76,11 +79,15 @@ public class HttpClient {
     private HttpVersion extractHttpVersion(String rawHttpResponse) {
         Matcher matcher = httpVersionPattern.matcher(rawHttpResponse);
         matcher.find();
-        return HttpVersion.valueOf(matcher.group());
+        String rawHttpVersion = matcher.group().replace("/", "_").replace(".", "");
+        return HttpVersion.valueOf(rawHttpVersion);
     }
 
     private StatusCode extractStatusCode(String rawHttpResponse) {
-        return null;
+        Matcher matcher = statusCodePattern.matcher(rawHttpResponse);
+        matcher.find();
+        String rawStatusCode = matcher.group().replace(" ", "_").toUpperCase();
+        return StatusCode.valueOf(rawStatusCode);
     }
 
     private HttpHeader extractHeader(String response) {

@@ -8,6 +8,8 @@ public class Main {
         HttpRequest exampleRequest = new HttpRequest("www.example.com", HttpVersion.HTTP_11);
         HttpRequest googleRequest = new HttpRequest("www.google.com", HttpVersion.HTTP_11);
 
-        client.send(exampleRequest);
+        HttpResponse response = client.send(exampleRequest);
+        System.out.println(response.getHttpVersion());
+        System.out.println(response.getStatusCode());
     }
 }
