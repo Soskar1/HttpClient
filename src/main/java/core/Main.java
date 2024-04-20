@@ -9,7 +9,6 @@ public class Main {
         HttpRequest googleRequest = new HttpRequest("www.google.com", HttpVersion.HTTP_11);
 
         HttpResponse response = client.send(exampleRequest);
-        System.out.println(response.getHttpVersion());
-        System.out.println(response.getStatusCode());
+        System.out.print(response.toString());
     }
 }

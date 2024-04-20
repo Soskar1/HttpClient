@@ -1,5 +1,8 @@
 package core;
 
+import core.headers.HeaderFactory;
+import core.headers.HttpHeader;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -54,10 +57,6 @@ public class HttpClient {
 
         boolean endOfHeaders = false;
         while (!endOfHeaders) {
-            bytesRead = in.read(buffer);
-            response = new String(buffer, 0, bytesRead);
-            scanner = new Scanner(response);
-
             while (scanner.hasNextLine()) {
                 responseLine = scanner.nextLine();
 
@@ -66,9 +65,13 @@ public class HttpClient {
                     break;
                 }
 
-                HttpHeader header = extractHeader(responseLine);
+                HttpHeader header = HeaderFactory.ConvertToHeader(responseLine);
                 httpHeaders.add(header);
             }
+
+            bytesRead = in.read(buffer);
+            response = new String(buffer, 0, bytesRead);
+            scanner = new Scanner(response);
         }
 
         //TODO: add context extraction
@@ -88,10 +91,6 @@ public class HttpClient {
         matcher.find();
         String rawStatusCode = matcher.group().replace(" ", "_").toUpperCase();
         return StatusCode.valueOf(rawStatusCode);
-    }
-
-    private HttpHeader extractHeader(String response) {
-        return null;
     }
 
     private String extractContent(DataInputStream in, int headerLength, int contentLength) {

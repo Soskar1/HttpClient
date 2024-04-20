@@ -1,5 +1,7 @@
 package core;
 
+import core.headers.HttpHeader;
+
 import java.util.List;
 
 public class HttpResponse {
@@ -29,5 +31,18 @@ public class HttpResponse {
 
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(httpVersion).append(" ").append(statusCode).append('\n');;
+        for (HttpHeader header : headers) {
+            sb.append(header.toString()).append('\n');
+        }
+
+        sb.append(content);
+
+        return sb.toString();
     }
 }
