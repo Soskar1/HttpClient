@@ -2,6 +2,7 @@ package core;
 
 import core.headers.HeaderFactory;
 import core.headers.HttpHeader;
+import core.requests.HttpRequest;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -27,9 +28,7 @@ public class HttpClient {
         Socket socket = new Socket(address, 80);
 
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-        writer.println(
-                "GET /index.html " + request.getVersion().toString() + "\n" +
-                "Host: " + address.getHostName());
+        writer.println(request.ConstructHttpRequest());
         writer.println();
         writer.flush();
 
@@ -69,9 +68,11 @@ public class HttpClient {
                 httpHeaders.add(header);
             }
 
-            bytesRead = in.read(buffer);
-            response = new String(buffer, 0, bytesRead);
-            scanner = new Scanner(response);
+            if (!endOfHeaders) {
+                bytesRead = in.read(buffer);
+                response = new String(buffer, 0, bytesRead);
+                scanner = new Scanner(response);
+            }
         }
 
         //TODO: add context extraction
@@ -92,10 +93,4 @@ public class HttpClient {
         String rawStatusCode = matcher.group().replace(" ", "_").toUpperCase();
         return StatusCode.valueOf(rawStatusCode);
     }
-
-    private String extractContent(DataInputStream in, int headerLength, int contentLength) {
-        return "";
-    }
-
-
 }
