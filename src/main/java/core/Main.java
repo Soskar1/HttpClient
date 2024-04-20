@@ -12,7 +12,7 @@ public class Main {
         HttpRequest googleRequest = new GetHttpRequest("www.google.com", HttpVersion.HTTP_11, "/index.html");
         HttpRequest w3docs = new GetHttpRequest("www.w3docs.com", HttpVersion.HTTP_11, "/index.html");
 
-        HttpResponse response = client.send(w3docs);
+        HttpResponse response = client.send(exampleRequest);
         System.out.print(response.toString());
     }
 }

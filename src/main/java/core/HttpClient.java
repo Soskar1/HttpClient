@@ -1,5 +1,6 @@
 package core;
 
+import core.headers.ContentLengthHeader;
 import core.headers.HeaderFactory;
 import core.headers.HttpHeader;
 import core.requests.HttpRequest;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
 public class HttpClient {
     private final Pattern httpVersionPattern;
     private final Pattern statusCodePattern;
+    private final int BUFFER_SIZE = 1024;
 
     public HttpClient() {
         httpVersionPattern = Pattern.compile("^HTTP/(0\\.9|1\\.0|1\\.1|2|3)");
@@ -41,41 +43,22 @@ public class HttpClient {
     private HttpResponse getResponse(Socket socket) throws IOException {
         DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
         bytesRead = in.read(buffer);
         
-        String response = new String(buffer, 0, bytesRead);
-        Scanner scanner = new Scanner(response);
-        String responseLine = scanner.nextLine();
+        String rawResponse = new String(buffer, 0, bytesRead);
+        Scanner bufferScanner = new Scanner(rawResponse);
 
-        HttpVersion httpVersion = extractHttpVersion(responseLine);
-        StatusCode statusCode = extractStatusCode(responseLine);
-        List<HttpHeader> httpHeaders = new ArrayList<>();
-        String content = "";
+        String rawVersionStatus = bufferScanner.nextLine();
+        HttpVersion httpVersion = extractHttpVersion(rawVersionStatus);
+        StatusCode statusCode = extractStatusCode(rawVersionStatus);
 
-        boolean endOfHeaders = false;
-        while (!endOfHeaders) {
-            while (scanner.hasNextLine()) {
-                responseLine = scanner.nextLine();
+        String rawHeaders = extractRawHeaders(in, buffer, bufferScanner);
+        List<HttpHeader> httpHeaders = convertToHeaders(rawHeaders);
 
-                if (responseLine == "") {
-                    endOfHeaders = true;
-                    break;
-                }
-
-                HttpHeader header = HeaderFactory.ConvertToHeader(responseLine);
-                httpHeaders.add(header);
-            }
-
-            if (!endOfHeaders) {
-                bytesRead = in.read(buffer);
-                response = new String(buffer, 0, bytesRead);
-                scanner = new Scanner(response);
-            }
-        }
-
-        //TODO: add context extraction
+        int contentLength = getContentLength(httpHeaders);
+        String content = extractContent(in, buffer, bufferScanner, contentLength);
 
         return new HttpResponse(httpVersion, statusCode, httpHeaders, content);
     }
@@ -92,5 +75,79 @@ public class HttpClient {
         matcher.find();
         String rawStatusCode = matcher.group().replace(" ", "_").toUpperCase();
         return StatusCode.valueOf(rawStatusCode);
+    }
+
+    private String extractRawHeaders(DataInputStream in, byte[] buffer, Scanner scanner) throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        boolean endOfHeaders = false;
+        while (!endOfHeaders) {
+            while (scanner.hasNextLine()) {
+                String responseLine = scanner.nextLine();
+
+                if (responseLine == "") {
+                    endOfHeaders = true;
+                    break;
+                }
+
+                sb.append(responseLine).append('\n');
+            }
+
+            if (!endOfHeaders) {
+                int bytesRead = in.read(buffer);
+                String rawResponse = new String(buffer, 0, bytesRead);
+                scanner = new Scanner(rawResponse);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private List<HttpHeader> convertToHeaders(String rawHeaders) {
+        List<HttpHeader> headers = new ArrayList<>();
+
+        Scanner headerScanner = new Scanner(rawHeaders);
+        while (headerScanner.hasNextLine()) {
+            String rawHeader = headerScanner.nextLine();
+            HttpHeader header = HeaderFactory.ConvertToHeader(rawHeader);
+            headers.add(header);
+        }
+
+        return headers;
+    }
+
+    private int getContentLength(List<HttpHeader> headers) {
+        for (HttpHeader header : headers) {
+            if (header instanceof ContentLengthHeader contentLengthHeader) {
+                return contentLengthHeader.getContentLength();
+            }
+        }
+
+        return 0;
+    }
+
+    private String extractContent(DataInputStream in, byte[] buffer, Scanner bufferScanner, int contentLength) throws IOException {
+        if (contentLength == 0) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        while (bufferScanner.hasNextLine()) {
+            String line = bufferScanner.nextLine();
+            sb.append(line);
+
+            contentLength -= line.length();
+        }
+
+        int byteRead;
+        while (contentLength > 0) {
+            byteRead = in.read(buffer);
+            sb.append(byteRead);
+
+            contentLength -= byteRead;
+        }
+
+        return sb.toString();
     }
 }
