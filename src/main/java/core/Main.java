@@ -12,8 +12,11 @@ public class Main {
         HttpRequest httpBinGet = new GetHttpRequest("httpbin.org", HttpVersion.HTTP_11, "/get");
         HttpRequest httpBinPost = new PostHttpRequest("httpbin.org", HttpVersion.HTTP_11, "/post", "Hello, World!");
         HttpRequest httpBinPut = new PutHttpRequest("httpbin.org", HttpVersion.HTTP_11, "/put", "Hello, World!");
+        HttpRequest httpBinDelete = new DeleteHttpRequest("httpbin.org", HttpVersion.HTTP_11, "/delete");
 
-        HttpResponse response = client.send(httpBinPut);
+        HttpRequest post = new PostHttpRequest("ptsv3.com", HttpVersion.HTTP_11, "/t/10001/post/test.txt", "Hello, World!");
+
+        HttpResponse response = client.send(post);
         System.out.print(response.toString());
     }
 }
