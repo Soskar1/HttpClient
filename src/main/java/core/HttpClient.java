@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -57,8 +58,7 @@ public class HttpClient {
         String rawHeaders = extractRawHeaders(in, buffer, bufferScanner);
         List<HttpHeader> httpHeaders = convertToHeaders(rawHeaders);
 
-        int contentLength = getContentLength(httpHeaders);
-        String content = extractContent(in, buffer, bufferScanner, contentLength);
+        String content = extractContent(in, buffer, bufferScanner);
 
         return new HttpResponse(httpVersion, statusCode, httpHeaders, content);
     }
@@ -116,36 +116,19 @@ public class HttpClient {
         return headers;
     }
 
-    private int getContentLength(List<HttpHeader> headers) {
-        for (HttpHeader header : headers) {
-            if (header instanceof ContentLengthHeader contentLengthHeader) {
-                return contentLengthHeader.getContentLength();
-            }
-        }
-
-        return 0;
-    }
-
-    private String extractContent(DataInputStream in, byte[] buffer, Scanner bufferScanner, int contentLength) throws IOException {
-        if (contentLength == 0) {
-            return "";
-        }
-
+    private String extractContent(DataInputStream in, byte[] buffer, Scanner bufferScanner) throws IOException {
         StringBuilder sb = new StringBuilder();
 
         while (bufferScanner.hasNextLine()) {
             String line = bufferScanner.nextLine();
             sb.append(line);
-
-            contentLength -= line.length();
         }
 
-        int byteRead;
-        while (contentLength > 0) {
-            byteRead = in.read(buffer);
-            sb.append(byteRead);
-
-            contentLength -= byteRead;
+        int bytesRead;
+        while (in.available() > 0) {
+            bytesRead = in.read(buffer);
+            String str = new String(buffer, 0, bytesRead);
+            sb.append(str);
         }
 
         return sb.toString();
