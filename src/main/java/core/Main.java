@@ -12,7 +12,9 @@ public class Main {
         HttpRequest w3docs = new GetHttpRequest("www.w3docs.com", HttpVersion.HTTP_11, "/index.html");
         HttpRequest youtube = new GetHttpRequest("www.youtube.com", HttpVersion.HTTP_11, "/index.html");
 
-        HttpResponse response = client.send(exampleRequest);
+        HttpRequest httpBin = new GetHttpRequest("httpbin.org", HttpVersion.HTTP_11, "/get");
+
+        HttpResponse response = client.send(httpBin);
         System.out.print(response.toString());
     }
 }
