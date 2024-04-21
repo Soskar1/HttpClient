@@ -1,6 +1,5 @@
 package core;
 
-import core.headers.ContentLengthHeader;
 import core.headers.HeaderFactory;
 import core.headers.HttpHeader;
 import core.requests.HttpRequest;
@@ -9,7 +8,6 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -125,9 +123,10 @@ public class HttpClient {
         }
 
         int bytesRead;
+        String str;
         while (in.available() > 0) {
             bytesRead = in.read(buffer);
-            String str = new String(buffer, 0, bytesRead);
+            str = new String(buffer, 0, bytesRead);
             sb.append(str);
         }
 
