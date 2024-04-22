@@ -13,13 +13,7 @@ public class HeadHttpRequest extends HttpRequest {
     }
 
     @Override
-    public String ConstructHttpRequest() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("HEAD ").append(path).append(" ").append(getVersion()).append("\n");
-
-        String headers = convertHeadersToString();
-        sb.append(headers);
-
-        return sb.toString();
+    protected String addHttpMethod() {
+        return "HEAD " + path + " " + getVersion();
     }
 }

@@ -27,7 +27,7 @@ public class HttpClient {
         Socket socket = new Socket(address, 80);
 
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-        writer.println(request.ConstructHttpRequest());
+        writer.println(request.construct());
         writer.println();
         writer.flush();
 

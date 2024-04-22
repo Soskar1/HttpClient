@@ -34,14 +34,32 @@ public abstract class HttpRequest {
         return headers;
     }
 
-    public abstract String ConstructHttpRequest();
+    public String construct() {
+        StringBuilder sb = new StringBuilder();
 
-    public String convertHeadersToString() {
+        String httpMethod = addHttpMethod();
+        String headers = addHeaders();
+        String content = addContent();
+
+        sb.append(httpMethod).append("\n");
+        sb.append(headers);
+        sb.append(content);
+
+        return sb.toString();
+    }
+
+    protected abstract String addHttpMethod();
+
+    private String addHeaders() {
         StringBuilder sb = new StringBuilder();
         for (HttpHeader header : headers) {
             sb.append(header.toString()).append("\n");
         }
 
         return sb.toString();
+    }
+
+    protected String addContent() {
+        return "";
     }
 }

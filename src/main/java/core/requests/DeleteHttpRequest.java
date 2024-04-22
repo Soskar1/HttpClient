@@ -13,13 +13,7 @@ public class DeleteHttpRequest extends HttpRequest {
     }
 
     @Override
-    public String ConstructHttpRequest() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("DELETE ").append(path).append(" ").append(getVersion()).append("\n");
-
-        String headers = convertHeadersToString();
-        sb.append(headers);
-
-        return sb.toString();
+    protected String addHttpMethod() {
+        return "DELETE " + path + " " + getVersion();
     }
 }

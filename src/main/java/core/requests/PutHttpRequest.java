@@ -23,15 +23,12 @@ public class PutHttpRequest extends HttpRequest {
     }
 
     @Override
-    public String ConstructHttpRequest() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("PUT ").append(path).append(" ").append(getVersion()).append("\n");
+    protected String addHttpMethod() {
+        return "PUT " + path + " " + getVersion();
+    }
 
-        String headers = convertHeadersToString();
-        sb.append(headers).append("\n");
-
-        sb.append(content);
-
-        return sb.toString();
+    @Override
+    protected String addContent() {
+        return content;
     }
 }
