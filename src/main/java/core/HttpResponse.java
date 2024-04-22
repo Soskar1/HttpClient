@@ -1,7 +1,5 @@
 package core;
 
-import core.headers.HttpHeader;
-
 import java.util.List;
 
 public class HttpResponse {

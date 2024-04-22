@@ -1,7 +1,5 @@
 package core;
 
-import core.headers.HeaderFactory;
-import core.headers.HttpHeader;
 import core.requests.HttpRequest;
 
 import java.io.*;
@@ -107,7 +105,7 @@ public class HttpClient {
         Scanner headerScanner = new Scanner(rawHeaders);
         while (headerScanner.hasNextLine()) {
             String rawHeader = headerScanner.nextLine();
-            HttpHeader header = HeaderFactory.ConvertToHeader(rawHeader);
+            HttpHeader header = new HttpHeader(rawHeader);
             headers.add(header);
         }
 

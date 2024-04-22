@@ -1,7 +1,7 @@
 package core.requests;
 
 import core.HttpVersion;
-import core.headers.HttpHeader;
+import core.HttpHeader;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

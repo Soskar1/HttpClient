@@ -16,7 +16,7 @@ public class Main {
 
         HttpRequest post = new PostHttpRequest("ptsv3.com", HttpVersion.HTTP_11, "/t/10001/post/test.txt", "Hello, World!");
 
-        HttpResponse response = client.send(post);
+        HttpResponse response = client.send(exampleRequest);
         System.out.print(response.toString());
     }
 }

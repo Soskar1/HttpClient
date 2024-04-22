@@ -1,8 +1,7 @@
 package core.requests;
 
 import core.HttpVersion;
-import core.headers.ContentLengthHeader;
-import core.headers.HttpHeader;
+import core.HttpHeader;
 
 import java.net.UnknownHostException;
 
@@ -17,7 +16,7 @@ public class PutHttpRequest extends HttpRequest {
         this.content = content;
 
         HttpHeader contentType = new HttpHeader("Content-Type: text/plain");
-        HttpHeader contentLength = new ContentLengthHeader("Content-Length: " + content.length());
+        HttpHeader contentLength = new HttpHeader("Content-Length: " + content.length());
 
         getHeaders().add(contentType);
         getHeaders().add(contentLength);

@@ -1,4 +1,4 @@
-package core.headers;
+package core;
 
 public class HttpHeader {
     private final String raw;
