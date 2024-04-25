@@ -42,7 +42,7 @@ public abstract class HttpRequest {
         String content = addContent();
 
         sb.append(httpMethod).append("\n");
-        sb.append(headers);
+        sb.append(headers).append("\n");
         sb.append(content);
 
         return sb.toString();

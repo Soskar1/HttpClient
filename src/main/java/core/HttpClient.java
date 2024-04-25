@@ -21,7 +21,6 @@ public class HttpClient {
         statusCodePattern = Pattern.compile("[A-z]\\D*$");
     }
 
-    //TODO: Make this async
     public HttpResponse send(HttpRequest request) throws IOException {
         InetAddress address = request.getAddress();
         Socket socket = new Socket(address, 80);
@@ -43,6 +42,10 @@ public class HttpClient {
         byte[] buffer = new byte[BUFFER_SIZE];
         int bytesRead;
         bytesRead = in.read(buffer);
+
+        if (bytesRead == -1) {
+            return null;
+        }
         
         String rawResponse = new String(buffer, 0, bytesRead);
         Scanner bufferScanner = new Scanner(rawResponse);
